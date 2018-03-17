@@ -5,13 +5,34 @@
 #include <clang-c/Index.h>
 
 namespace {
+    class String {
+    public:
+        String(CXString& s): m_str(clang_getCString(s)), m_data(s) {}
+        ~String() { clang_disposeString(m_data); }
+
+        const char *data() { return m_str; }
+    private:
+        const char *m_str;
+        CXString m_data;
+    };
+
+    void print_function(const CXCursor& cursor) {
+        auto usr = clang_getCursorUSR(cursor);
+        auto str = String(usr); 
+        std::cout << str.data() << std::endl;
+    }
+
     CXChildVisitResult visit_child(CXCursor child, CXCursor parent, CXClientData) {
-        auto string = clang_getCursorUSR(child);
-
-        std::cout << clang_getCString(string) << std::endl;
-
-        clang_disposeString(string);
-        return CXChildVisit_Recurse;
+        auto type = clang_getCursorType(child);
+        switch (type.kind)
+        {
+            case CXType_FunctionProto:
+            case CXType_FunctionNoProto:
+                print_function(child);
+                return CXChildVisit_Continue;            
+            default:
+                return CXChildVisit_Recurse;
+        }
     }
 }
 
