@@ -6,7 +6,7 @@ import os
 
 config = {
     'libraries': [ 'clang' ],
-    'extra_compile_args': [ '-std=c++14', '-Wall', '-Werror' ],
+    'extra_compile_args': [ '-std=c++11', '-Werror' ],
     'sources': [
         'src/main.cpp',
         'src/Parser.cpp',
@@ -19,7 +19,7 @@ if llvm:
     config['include_dirs'] += [ os.path.join(llvm, 'include') ]
     config['library_dirs'] =  [ os.path.join(llvm, 'lib') ]
 
-print(config) 
+print("building with config %s" % str(config)) 
 
 teager = Extension('teager', **config)
 

@@ -114,7 +114,7 @@ private:
     CXIndex m_index;
 };
 
-Parser::Parser(): m_impl(std::make_unique<ParserImpl>()) {
+Parser::Parser(): m_impl(new ParserImpl()) {
 }
 
 Parser::~Parser() {
