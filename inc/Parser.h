@@ -3,6 +3,7 @@
 
 #include <string>
 #include <memory>
+#include <functional>
 
 class ParserImpl;
 
@@ -11,7 +12,9 @@ public:
     Parser();
     ~Parser();
 
-    void parse_file(const std::string& file);
+    void parse_file(
+            const std::string& file, 
+            std::function<void(const std::string&)> cb);
 
 private:
     std::unique_ptr<ParserImpl> m_impl;

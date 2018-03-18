@@ -1,4 +1,4 @@
-#include "polo-parser/Parser.h"
+#include "Parser.h"
 
 #include <iostream>
 
@@ -16,19 +16,24 @@ namespace {
         CXString m_data;
     };
 
-    void print_function(const CXCursor& cursor) {
+    void print_function(const CXCursor& cursor, const CXClientData& ctx) {
+        if (!ctx)
+            return;
+
         auto usr = clang_getCursorUSR(cursor);
-        auto str = String(usr); 
-        std::cout << str.data() << std::endl;
+        auto str = String(usr);
+        
+        auto cb = reinterpret_cast<std::function<void(const std::string&)> *>(ctx);
+        (*cb)(str.data());        
     }
 
-    CXChildVisitResult visit_child(CXCursor child, CXCursor parent, CXClientData) {
+    CXChildVisitResult visit_child(CXCursor child, CXCursor parent, CXClientData ctx) {
         auto type = clang_getCursorType(child);
         switch (type.kind)
         {
             case CXType_FunctionProto:
             case CXType_FunctionNoProto:
-                print_function(child);
+                print_function(child, ctx);
                 return CXChildVisit_Continue;            
             default:
                 return CXChildVisit_Recurse;
@@ -46,7 +51,9 @@ public:
         clang_disposeIndex(m_index);
     }
 
-    void parse_file(const std::string& file) {
+    void parse_file(
+            const std::string& file,
+            std::function<void(const std::string&)> cb) {
         CXTranslationUnit tu = clang_parseTranslationUnit(
             m_index,
             file.c_str(),
@@ -64,7 +71,7 @@ public:
         clang_visitChildren(
             cursor,
             &visit_child,
-            nullptr
+            &cb 
         );
 
         clang_disposeTranslationUnit(tu);
@@ -80,6 +87,8 @@ Parser::Parser(): m_impl(std::make_unique<ParserImpl>()) {
 Parser::~Parser() {
 }
 
-void Parser::parse_file(const std::string& file) {
-    m_impl->parse_file(file);
+void Parser::parse_file(
+        const std::string& file, 
+        std::function<void(const std::string&)> cb) {
+    m_impl->parse_file(file, cb);
 }
