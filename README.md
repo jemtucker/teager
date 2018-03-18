@@ -1,6 +1,9 @@
 # C / C++ Parser
 
-A libclang based C / C++ code parser 
+A libclang based C / C++ code parser for python.
 
-## Building
+## Build
 
+```
+./setup.py install && ./setup.py test
+```
