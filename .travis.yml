@@ -14,7 +14,7 @@ matrix:
             - ubuntu-toolchain-r-test 
           packages:
             - g++-7
-            - libclang 
+            - libclang-dev
     
   include:
     - os: linux
@@ -25,7 +25,7 @@ matrix:
           sources:
             - llvm-toolchain-trusty-5.0
           packages:
-            - libclang 
+            - libclang-dev 
             - clang-5.0
 
 before_install:
