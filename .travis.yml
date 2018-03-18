@@ -1,7 +1,6 @@
 language: cpp
 
 script:
-  - ln -s /usr/lib/llvm-5.0/include/clang-c /usr/include/clang-c
   - ./setup.py install && ./setup.py test
 
 matrix:

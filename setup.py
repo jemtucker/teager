@@ -2,22 +2,26 @@
 
 from distutils.core import setup, Extension, Command
 
-teager = Extension('teager',
-                    include_dirs=[
-                        'inc',
-                    ],
-                    libraries=[
-                        'clang',
-                    ],
-                    extra_compile_args=[
-                        '-std=c++14',
-                        '-Wall',
-                        '-Werror',
-                    ],
-                    sources=[
-                        'src/main.cpp',
-                        'src/Parser.cpp',
-                    ])
+import os 
+
+config = {
+    'libraries': [ 'clang' ],
+    'extra_compile_args': [ '-std=c++14', '-Wall', '-Werror' ],
+    'sources': [
+        'src/main.cpp',
+        'src/Parser.cpp',
+    ],
+    'include_dirs': [ 'inc' ],
+}
+
+llvm = os.environ.get('PATH_TO_LLVM')
+if llvm:
+    config['include_dirs'] += [ os.path.join(llvm, 'include') ]
+    config['library_dirs'] =  [ os.path.join(llvm, 'lib') ]
+
+print(config) 
+
+teager = Extension('teager', **config)
 
 class TestCommand(Command):
     """
