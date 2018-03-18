@@ -1,7 +1,11 @@
 language: cpp
 
+dist: trusty
+
+sudo: required
+
 script:
-  - ./setup.py install && ./setup.py test
+  - sudo ./setup.py install && ./setup.py test
 
 env:
   global:
