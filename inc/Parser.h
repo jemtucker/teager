@@ -14,7 +14,7 @@ public:
 
     void parse_file(
             const std::string& file, 
-            std::function<void(const std::string&)> cb);
+            std::function<void(const char *)> cb);
 
 private:
     std::unique_ptr<ParserImpl> m_impl;

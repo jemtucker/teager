@@ -2,34 +2,33 @@
 
 #include "Parser.h"
 
-static PyObject * jem_main(PyObject *self, PyObject *args) {
+static PyObject * Teager_parse_file(PyObject *self, PyObject *args) {
     const char *filename = nullptr;
 
     if (!PyArg_ParseTuple(args, "s", &filename))
         return nullptr;
     
     Parser parser;
-    parser.parse_file(filename, [](const std::string& s) {
-        printf("Output: %s\n", s.c_str()); 
+    parser.parse_file(filename, [](const char *str) {
+        printf("Output: %s\n", str); 
     }); 
     
     Py_RETURN_NONE;
 }
 
-static PyMethodDef JemMethods[] = {
-    {"parse_file",  jem_main, METH_VARARGS, "Parse a file"},
-    {NULL, NULL, 0, NULL}        /* Sentinel */
+static PyMethodDef TeagerMethods[] = {
+    {"parse_file",  Teager_parse_file, METH_VARARGS, "Parse a file"},
+    {NULL, NULL, 0, NULL}  
 };
 
-static struct PyModuleDef jemmodule = {
+static struct PyModuleDef TeagerModule = {
     PyModuleDef_HEAD_INIT,
-    "jem",   /* name of module */
-    nullptr, /* module documentation, may be NULL */
-    -1,       /* size of per-interpreter state of the module,
-                 or -1 if the module keeps state in global variables. */
-    JemMethods
+    "teager", // Module Name 
+    nullptr,  // Documentation
+    -1,
+    TeagerMethods 
 };
 
-PyMODINIT_FUNC PyInit_jem(void) {
-    return PyModule_Create(&jemmodule);
+PyMODINIT_FUNC PyInit_teager(void) {
+    return PyModule_Create(&TeagerModule);
 }

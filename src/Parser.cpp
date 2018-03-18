@@ -7,7 +7,7 @@
 namespace {
     class String {
     public:
-        String(CXString& s): m_str(clang_getCString(s)), m_data(s) {}
+        String(CXString s): m_str(clang_getCString(s)), m_data(s) {}
         ~String() { clang_disposeString(m_data); }
 
         const char *data() { return m_str; }
@@ -20,14 +20,14 @@ namespace {
         if (!ctx)
             return;
 
-        auto usr = clang_getCursorUSR(cursor);
-        auto str = String(usr);
+        String str(clang_getCursorUSR(cursor));
         
-        auto cb = reinterpret_cast<std::function<void(const std::string&)> *>(ctx);
+        auto cb = reinterpret_cast<
+            std::function<void(const char *)> *>(ctx);
         (*cb)(str.data());        
     }
 
-    CXChildVisitResult visit_child(CXCursor child, CXCursor parent, CXClientData ctx) {
+    CXChildVisitResult visit(CXCursor child, CXCursor, CXClientData ctx) {
         auto type = clang_getCursorType(child);
         switch (type.kind)
         {
@@ -53,7 +53,7 @@ public:
 
     void parse_file(
             const std::string& file,
-            std::function<void(const std::string&)> cb) {
+            std::function<void(const char *)> cb) {
         CXTranslationUnit tu = clang_parseTranslationUnit(
             m_index,
             file.c_str(),
@@ -70,7 +70,7 @@ public:
         CXCursor cursor = clang_getTranslationUnitCursor(tu);
         clang_visitChildren(
             cursor,
-            &visit_child,
+            &visit,
             &cb 
         );
 
@@ -89,6 +89,6 @@ Parser::~Parser() {
 
 void Parser::parse_file(
         const std::string& file, 
-        std::function<void(const std::string&)> cb) {
+        std::function<void(const char *)> cb) {
     m_impl->parse_file(file, cb);
 }

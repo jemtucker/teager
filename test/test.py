@@ -1,3 +1,8 @@
-import jem
+import teager
 
-jem.parse_file("src/main.cpp")
+from unittest import TestCase
+
+class TeagerTests(TestCase):
+    def test_c(self):
+        teager.parse_file("test/files/test_c.c")
+
