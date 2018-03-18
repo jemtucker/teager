@@ -7,7 +7,7 @@ matrix:
   include:
     - os: linux
       env:
-        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+        - MATRIX_EVAL="CPATH=/usr/lib/llvm-5.0/include CC=gcc-7 && CXX=g++-7"
       addons:
         apt:
           sources: 
@@ -19,7 +19,7 @@ matrix:
   include:
     - os: linux
       env:
-        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+        - MATRIX_EVAL="CPATH=/usr/lib/llvm-5.0/include CC=clang-5.0 && CXX=clang++-5.0"
       addons:
         apt:
           sources:
@@ -30,5 +30,4 @@ matrix:
 
 before_install:
   - eval ${MATRIX_EVAL}
-
 
