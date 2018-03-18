@@ -1,6 +1,8 @@
-# C / C++ Parser
+# Teager C / C++ AST Traversal
 
-A libclang based C / C++ code parser for python.
+https://travis-ci.org/jemtucker/teager.svg?branch=master
+
+A libclang powered C / C++ AST traversal library for python.
 
 ## Build
 
