@@ -11,6 +11,8 @@ teager = Extension('teager',
                     ],
                     extra_compile_args=[
                         '-std=c++14',
+                        '-Wall',
+                        '-Werror',
                     ],
                     sources=[
                         'src/main.cpp',

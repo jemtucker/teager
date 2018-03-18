@@ -7,14 +7,31 @@
 
 class ParserImpl;
 
+enum class SymbolType {
+    Function,
+    Variable,
+    Class, 
+};
+
 class Parser {
 public:
+    
+    using Callback = std::function<
+        void(
+            const std::string&, // Symbol name
+            SymbolType,         // Symbol type            
+            const std::string&, // Filename
+            unsigned            // Line number 
+            )
+        >;
+public:
     Parser();
-    ~Parser();
-
-    void parse_file(
-            const std::string& file, 
-            std::function<void(const char *)> cb);
+    ~Parser(); 
+    
+    /*
+     * Parse a single translation unit, calling callback for every symbol.
+     */ 
+    void parse_file(const std::string& file, Callback cb);
 
 private:
     std::unique_ptr<ParserImpl> m_impl;

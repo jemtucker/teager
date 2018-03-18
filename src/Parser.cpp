@@ -9,22 +9,55 @@ namespace {
     public:
         String(CXString s): m_str(clang_getCString(s)), m_data(s) {}
         ~String() { clang_disposeString(m_data); }
+        
+        // DELETE Copy / move
 
-        const char *data() { return m_str; }
+        std::string str() { return m_str; }
     private:
         const char *m_str;
         CXString m_data;
+    };
+
+    class SourceLocation {
+    public:
+        SourceLocation(CXSourceLocation loc) {
+            clang_getSpellingLocation(
+                loc,
+                &m_file,
+                &m_line,
+                nullptr,
+                nullptr        
+            );
+        }
+
+        std::string filename() { 
+            String name = clang_getFileName(m_file);
+            return name.str();      
+        }
+
+        unsigned lineno() { return m_line; } 
+
+    private:
+        CXFile m_file;
+        unsigned m_line;
     };
 
     void print_function(const CXCursor& cursor, const CXClientData& ctx) {
         if (!ctx)
             return;
 
-        String str(clang_getCursorUSR(cursor));
+        auto cb = reinterpret_cast<Parser::Callback *>(ctx);
+        auto callback = *cb;
+
+        String name = clang_getCursorSpelling(cursor);
+        SourceLocation loc = clang_getCursorLocation(cursor); 
         
-        auto cb = reinterpret_cast<
-            std::function<void(const char *)> *>(ctx);
-        (*cb)(str.data());        
+        callback(
+            name.str(),
+            SymbolType::Function,
+            loc.filename(),
+            loc.lineno()
+        );
     }
 
     CXChildVisitResult visit(CXCursor child, CXCursor, CXClientData ctx) {
@@ -53,7 +86,7 @@ public:
 
     void parse_file(
             const std::string& file,
-            std::function<void(const char *)> cb) {
+            Parser::Callback cb) {
         CXTranslationUnit tu = clang_parseTranslationUnit(
             m_index,
             file.c_str(),
@@ -89,6 +122,6 @@ Parser::~Parser() {
 
 void Parser::parse_file(
         const std::string& file, 
-        std::function<void(const char *)> cb) {
+        Callback cb) {
     m_impl->parse_file(file, cb);
 }
