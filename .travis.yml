@@ -3,11 +3,15 @@ language: cpp
 script:
   - ./setup.py install && ./setup.py test
 
+env:
+  global:
+    - PATH_TO_LLVM=/usr/lib/llvm-3.4
+
 matrix:
   include:
     - os: linux
       env:
-        - MATRIX_EVAL="PATH_TO_LLVM=/usr/lib/llvm-3.4 && CC=gcc-7 && CXX=g++-7"
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
       addons:
         apt:
           sources: 
@@ -19,7 +23,7 @@ matrix:
   include:
     - os: linux
       env:
-        - MATRIX_EVAL="PATH_TO_LLVM=/usr/lib/llvm-3.4 && CC=clang-5.0 && CXX=clang++-5.0"
+        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
       addons:
         apt:
           sources:
