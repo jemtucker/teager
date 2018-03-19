@@ -70,3 +70,13 @@ class TeagerFunctionTests(TestCase):
         self.assertEqual(callback.syms[3].name, "function_four")
         self.assertEqual(callback.syms[3].line, 13)
 
+    def test_namespace_handling(self):
+        callback = Callback()
+        teager.parse_file("test/files/test_naspace_handling.cpp", callback)
+        
+        self.assertEqual(len(callback.syms), 4)
+        self.assertEqual(callback.syms[0].name, "in_namespace_testing_internal")
+        self.assertEqual(callback.syms[1].name, "in_namespace_testing")
+        self.assertEqual(callback.syms[2].name, "in_namespace_external")
+        self.assertEqual(callback.syms[3].name, "in_namespace_anon")
+
