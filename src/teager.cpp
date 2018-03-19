@@ -2,8 +2,9 @@
 
 #include "Parser.h"
 
-static void Teager_callback(
+static bool Teager_callback(
     PyObject *callable,
+    bool& success,
     const std::string& symbol,
     SymbolType type,
     const std::string& filename,
@@ -23,15 +24,17 @@ static void Teager_callback(
                 nullptr,  // Argument list (not needed in this instance)
                 kwargs);  // Keyword argument dict
      
-        // TODO: result can be null if an exception is thrown in the above
-        //       call. We should somehow pass that back to the original
-        //       caller. 
-    
-        if (result)
+        if (result) 
             Py_DECREF(result);
-    
+        else 
+            success = false; // Callback returned null, ie. exception raised
+
         Py_DECREF(kwargs);
+    } else {
+        success = false;
     }
+    
+    return success; 
 }
 
 static PyObject * Teager_parse(PyObject *self, PyObject *args) {
@@ -47,19 +50,25 @@ static PyObject * Teager_parse(PyObject *self, PyObject *args) {
     }
     
     namespace ph = std::placeholders;
+    
+    bool success = true;
 
     Parser parser;
     parser.parse_file(
         filename, 
         std::bind(
             Teager_callback, 
-            callback, 
+            callback,
+            std::ref(success), 
             ph::_1, 
             ph::_2, 
             ph::_3, 
             ph::_4));
-       
-    Py_RETURN_NONE;
+     
+    if (success)
+        Py_RETURN_NONE;
+    else 
+        return nullptr;
 }
 
 static PyMethodDef TeagerMethods[] = {

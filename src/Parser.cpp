@@ -10,7 +10,11 @@ namespace {
         String(CXString s): m_str(clang_getCString(s)), m_data(s) {}
         ~String() { clang_disposeString(m_data); }
         
-        // DELETE Copy / move
+        String(const String&) = delete;
+        String(String&&) = delete;
+
+        String& operator=(const String&) = delete;        
+        String& operator=(String&) = delete;
 
         std::string str() { return m_str; }
     private:
@@ -31,7 +35,7 @@ namespace {
         }
 
         std::string filename() { 
-            String name = clang_getFileName(m_file);
+            String name(clang_getFileName(m_file));
             return name.str();      
         }
 
@@ -42,32 +46,36 @@ namespace {
         unsigned m_line;
     };
 
-    void print_function(const CXCursor& cursor, const CXClientData& ctx) {
-        if (!ctx)
-            return;
-
+    bool process_child(const CXCursor& cursor, const CXClientData& ctx) {
         auto cb = reinterpret_cast<Parser::Callback *>(ctx);
         auto callback = *cb;
 
-        String name = clang_getCursorSpelling(cursor);
+        String name(clang_getCursorSpelling(cursor));
         SourceLocation loc = clang_getCursorLocation(cursor); 
         
-        callback(
+        bool res = callback(
             name.str(),
             SymbolType::Function,
             loc.filename(),
             loc.lineno()
         );
+        
+        return res;
     }
 
     CXChildVisitResult visit(CXCursor child, CXCursor, CXClientData ctx) {
+        if (!ctx)
+            return CXChildVisit_Break;
+        
         auto type = clang_getCursorType(child);
         switch (type.kind)
         {
             case CXType_FunctionProto:
             case CXType_FunctionNoProto:
-                print_function(child, ctx);
-                return CXChildVisit_Continue;            
+                if (process_child(child, ctx))
+                    return CXChildVisit_Continue;
+                else
+                    return CXChildVisit_Break;            
             default:
                 return CXChildVisit_Recurse;
         }

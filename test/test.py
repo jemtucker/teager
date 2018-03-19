@@ -80,3 +80,12 @@ class TeagerFunctionTests(TestCase):
         self.assertEqual(callback.syms[2].name, "in_namespace_external")
         self.assertEqual(callback.syms[3].name, "in_namespace_anon")
 
+    def test_exception_safety(self):
+        class TeagerTestEx(Exception):
+            pass
+
+        def callback(**kwargs):
+            raise TeagerTestEx('Its a test')
+        
+        with self.assertRaises(TeagerTestEx):
+            teager.parse("test/files/test_naspace_handling.cpp", callback)

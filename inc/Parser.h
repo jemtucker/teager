@@ -17,7 +17,7 @@ class Parser {
 public:
     
     using Callback = std::function<
-        void(
+        bool(
             const std::string&, // Symbol name
             SymbolType,         // Symbol type            
             const std::string&, // Filename
