@@ -8,7 +8,7 @@ config = {
     'libraries': [ 'clang' ],
     'extra_compile_args': [ '-std=c++11', '-Werror' ],
     'sources': [
-        'src/main.cpp',
+        'src/teager.cpp',
         'src/Parser.cpp',
     ],
     'include_dirs': [ 'inc' ],

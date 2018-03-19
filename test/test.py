@@ -12,15 +12,15 @@ class Callback(object):
     def __init__(self):
         self.syms = []
 
-    def __call__(self, name, path, line):
-        s = SymItem(name, path, line)
+    def __call__(self, symbol=None, filename=None, lineno=None):
+        s = SymItem(symbol, filename, lineno)
         self.syms.append(s)
 
 class TeagerFunctionTests(TestCase):
 
     def test_single_function_c(self):
         callback = Callback()
-        teager.parse_file("test/files/test_single_function.c", callback)
+        teager.parse("test/files/test_single_function.c", callback)
         self.assertEqual(len(callback.syms), 1)
         self.assertEqual(callback.syms[0].name, "only_one_function") 
         self.assertEqual(callback.syms[0].path, "test/files/test_single_function.c") 
@@ -28,7 +28,7 @@ class TeagerFunctionTests(TestCase):
 
     def test_single_function_cpp(self):
         callback = Callback()
-        teager.parse_file("test/files/test_single_function.cpp", callback)
+        teager.parse("test/files/test_single_function.cpp", callback)
         self.assertEqual(len(callback.syms), 1)
         self.assertEqual(callback.syms[0].name, "only_one_function") 
         self.assertEqual(callback.syms[0].path, "test/files/test_single_function.cpp") 
@@ -36,7 +36,7 @@ class TeagerFunctionTests(TestCase):
     
     def test_multiple_functions_c(self):
         callback = Callback()
-        teager.parse_file("test/files/test_multiple_functions.c", callback)
+        teager.parse("test/files/test_multiple_functions.c", callback)
         
         self.assertEqual(len(callback.syms), 4)
         
@@ -54,7 +54,7 @@ class TeagerFunctionTests(TestCase):
 
     def test_multiple_functions_cpp(self):
         callback = Callback()
-        teager.parse_file("test/files/test_multiple_functions.cpp", callback)
+        teager.parse("test/files/test_multiple_functions.cpp", callback)
         
         self.assertEqual(len(callback.syms), 4)
         
@@ -72,7 +72,7 @@ class TeagerFunctionTests(TestCase):
 
     def test_namespace_handling(self):
         callback = Callback()
-        teager.parse_file("test/files/test_naspace_handling.cpp", callback)
+        teager.parse("test/files/test_naspace_handling.cpp", callback)
         
         self.assertEqual(len(callback.syms), 4)
         self.assertEqual(callback.syms[0].name, "in_namespace_testing_internal")

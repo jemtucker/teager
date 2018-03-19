@@ -8,24 +8,33 @@ static void Teager_callback(
     SymbolType type,
     const std::string& filename,
     unsigned lineno) {
-
-    auto args = Py_BuildValue(
-        "ssI",
-        symbol.c_str(),
-        filename.c_str(),
-        lineno);
-
-    PyObject *result = PyEval_CallObject(callable, args);
     
-    // TODO: result can be null if an exception is thrown in the above
-    //       call. We should somehow pass that back to the original
-    //       caller. 
+    // Call the callback with all supported kwargs, the caller can then
+    // choose which to actually handle.
+    auto kwargs = Py_BuildValue(
+        "{s:s, s:s, s:I}",
+        "symbol", symbol.c_str(),
+        "filename", filename.c_str(),
+        "lineno", lineno);
     
-    Py_DECREF(result);
-    Py_DECREF(args);
+    if (kwargs) {
+        PyObject *result = PyEval_CallObjectWithKeywords(
+                callable, // Callable object to call
+                nullptr,  // Argument list (not needed in this instance)
+                kwargs);  // Keyword argument dict
+     
+        // TODO: result can be null if an exception is thrown in the above
+        //       call. We should somehow pass that back to the original
+        //       caller. 
+    
+        if (result)
+            Py_DECREF(result);
+    
+        Py_DECREF(kwargs);
+    }
 }
 
-static PyObject * Teager_parse_file(PyObject *self, PyObject *args) {
+static PyObject * Teager_parse(PyObject *self, PyObject *args) {
     const char *filename = nullptr;
     PyObject *callback = nullptr;
 
@@ -54,7 +63,7 @@ static PyObject * Teager_parse_file(PyObject *self, PyObject *args) {
 }
 
 static PyMethodDef TeagerMethods[] = {
-    {"parse_file",  Teager_parse_file, METH_VARARGS, "Parse a file"},
+    {"parse",  Teager_parse, METH_VARARGS, "Parse a file"},
     {NULL, NULL, 0, NULL}  
 };
 
