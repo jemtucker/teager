@@ -1,3 +1,5 @@
 compile_commands.json
 build/
 __pycache__/
+teager.egg-info/
+dist/
