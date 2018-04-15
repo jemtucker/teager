@@ -38,6 +38,6 @@ matrix:
 
 before_install:
   - pyenv shell 3.6
-  - pip install setuptools
+  - pip3 install setuptools
   - eval ${MATRIX_EVAL}
 

@@ -3,6 +3,8 @@
 from setuptools import setup, Extension, Command
 
 import os 
+import glob
+
 
 config = {
     'libraries': [ 'clang' ],
@@ -14,12 +16,23 @@ config = {
     'include_dirs': [ 'inc' ],
 }
 
-llvm = os.environ.get('PATH_TO_LLVM')
+def find_llvm():
+    llvm = os.environ.get('PATH_TO_LLVM')
+    if llvm:
+        return llvm
+    paths = glob.glob('/usr/lib/llvm*')
+    if paths:
+        return paths[0]
+    return None
+
+
+llvm = find_llvm()
 if llvm:
     config['include_dirs'] += [ os.path.join(llvm, 'include') ]
     config['library_dirs'] =  [ os.path.join(llvm, 'lib') ]
 
 teager = Extension('teager', **config)
+
 
 class TestCommand(Command):
     """
@@ -54,9 +67,10 @@ class TestCommand(Command):
         # run the test suite
         test_runner.run(test_suite)
 
+
 setup(
     name='teager',
-    version='0.1.2',
+    version='0.1.3',
     description='AST traversal powered by libclang',
     long_description=open('README.md').read(),
     author='Jem Tucker',
