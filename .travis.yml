@@ -37,6 +37,7 @@ matrix:
             - clang-5.0
 
 before_install:
-  - pip3 install setuptools
+  - pyenv shell 3.6
+  - pip install setuptools
   - eval ${MATRIX_EVAL}
 
