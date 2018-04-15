@@ -75,7 +75,7 @@ class TestCommand(Command):
 
 setup(
     name='teager',
-    version='0.1.3',
+    version='0.1.4',
     description='AST traversal powered by libclang',
     long_description=open('README.md').read(),
     author='Jem Tucker',
