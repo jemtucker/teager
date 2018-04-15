@@ -13,10 +13,11 @@ static bool Teager_callback(
     // Call the callback with all supported kwargs, the caller can then
     // choose which to actually handle.
     auto kwargs = Py_BuildValue(
-        "{s:s, s:s, s:I}",
+        "{s:s, s:s, s:I, s:I}",
         "symbol", symbol.c_str(),
         "filename", filename.c_str(),
-        "lineno", lineno);
+        "lineno", lineno,
+        "symtype", type);
     
     if (kwargs) {
         PyObject *result = PyEval_CallObjectWithKeywords(
@@ -85,5 +86,23 @@ static struct PyModuleDef TeagerModule = {
 };
 
 PyMODINIT_FUNC PyInit_teager(void) {
-    return PyModule_Create(&TeagerModule);
+    PyObject *m = PyModule_Create(&TeagerModule);
+    
+    if (PyModule_AddIntConstant(
+            m, 
+            "TYPE_DECLARATION", 
+            (long) SymbolType::Declaration)) {
+        Py_XDECREF(m);
+        m = nullptr;
+    }
+
+    if (PyModule_AddIntConstant(
+            m, 
+            "TYPE_DEFINITION", 
+            (long) SymbolType::Definition)) {
+        Py_XDECREF(m);
+        m = nullptr;
+    }
+
+    return m;
 }

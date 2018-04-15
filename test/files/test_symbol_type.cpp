@@ -1,0 +1,5 @@
+void myfunc();
+
+void myfunc() {
+
+}

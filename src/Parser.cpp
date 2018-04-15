@@ -46,6 +46,15 @@ namespace {
         unsigned m_line;
     };
 
+    SymbolType symbol_type(const CXCursor& cursor) {
+        auto isdef = clang_isCursorDefinition(cursor);
+        if (isdef) {
+            return SymbolType::Definition;
+        } else {
+            return SymbolType::Declaration;
+        }
+    }
+
     bool process_child(const CXCursor& cursor, const CXClientData& ctx) {
         auto cb = reinterpret_cast<Parser::Callback *>(ctx);
         auto callback = *cb;
@@ -55,7 +64,7 @@ namespace {
         
         bool res = callback(
             name.str(),
-            SymbolType::Function,
+            symbol_type(cursor),
             loc.filename(),
             loc.lineno()
         );
@@ -102,7 +111,7 @@ public:
             0,
             nullptr,
             0,
-            CXTranslationUnit_SkipFunctionBodies
+            0
         );
 
         if (!tu)

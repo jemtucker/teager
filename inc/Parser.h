@@ -8,9 +8,8 @@
 class ParserImpl;
 
 enum class SymbolType {
-    Function,
-    Variable,
-    Class, 
+    Declaration = 0,
+    Definition = 1,
 };
 
 class Parser {

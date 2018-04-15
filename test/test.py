@@ -12,7 +12,11 @@ class Callback(object):
     def __init__(self):
         self.syms = []
 
-    def __call__(self, symbol=None, filename=None, lineno=None):
+    def __call__(self, *args, **kwargs):
+        symbol = kwargs['symbol']
+        filename = kwargs['filename']
+        lineno = kwargs['lineno']
+
         s = SymItem(symbol, filename, lineno)
         self.syms.append(s)
 
@@ -89,3 +93,12 @@ class TeagerFunctionTests(TestCase):
         
         with self.assertRaises(TeagerTestEx):
             teager.parse("test/files/test_naspace_handling.cpp", callback)
+
+    def test_symbol_type(self):
+        types = []
+        def callback(*args, **kwargs):
+            types.append(kwargs['symtype'])
+        teager.parse("test/files/test_symbol_type.cpp", callback)
+        self.assertEqual(types[0], teager.TYPE_DECLARATION)
+        self.assertEqual(types[1], teager.TYPE_DEFINITION)
+

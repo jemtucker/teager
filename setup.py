@@ -58,7 +58,7 @@ setup(
     name='teager',
     version='0.1.1',
     description='AST traversal powered by libclang',
-    long_description_type='text/markdown',
+    long_description=open('README.md').read(),
     author='Jem Tucker',
     author_email='mail@jemtucker.com',
     url='https://github.com/jemtucker/teager',
