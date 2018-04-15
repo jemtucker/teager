@@ -19,10 +19,15 @@ config = {
 def find_llvm():
     llvm = os.environ.get('PATH_TO_LLVM')
     if llvm:
+        print('llvm found: ' + llvm)
         return llvm
-    paths = glob.glob('/usr/lib/llvm*')
+    paths = glob.glob('/usr/lib/llvm-*')
     if paths:
+        print('llvm found: ' + paths[0])
         return paths[0]
+    paths = glob.glob('/app/.apt/usr/lib/llvm-*')
+    if paths:
+        print('llvm found: ' + paths[0])
     return None
 
 
