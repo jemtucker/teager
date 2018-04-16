@@ -21,13 +21,13 @@ def find_llvm():
     if llvm:
         print('llvm found: ' + llvm)
         return llvm
-    paths = glob.glob('/usr/lib/llvm-*')
-    if paths:
-        print('llvm found: ' + paths[0])
-        return paths[0]
-    paths = glob.glob('/app/.apt/usr/lib/llvm-*')
-    if paths:
-        print('llvm found: ' + paths[0])
+    ldpath = os.environ.get('LD_LIBRARY_PATH')
+    if ldpath:
+        for path in ldpath.split(':'):
+            paths = glob.glob(path + '/llvm-*')
+            if paths:
+                print('llvm found: ' + paths[0])
+                return paths[0]
     return None
 
 
@@ -75,7 +75,7 @@ class TestCommand(Command):
 
 setup(
     name='teager',
-    version='0.1.4',
+    version='0.1.5',
     description='AST traversal powered by libclang',
     long_description=open('README.md').read(),
     author='Jem Tucker',
